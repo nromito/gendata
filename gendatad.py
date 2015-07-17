@@ -24,14 +24,17 @@ def createTimeStamp():
     return str(datetime.datetime.now())
 
 
-def mergeData(timestamp, fields, values, multiline):
+def mergeData(timestamp, fields, values, multiline, fieldsPerLine):
     event = timestamp + ' '
+    count = 0
     if multiline:
         event += '\n'
     for idx in range(len(fields)):
         event += (str(fields[idx]) + '=' + str(values[idx]) + ' ')
-        if multiline:
+        count += 1
+        if multiline and count==fieldsPerLine:
             event += '\n'
+            count = 0
     if not multiline:
         event += '\n'
     return event
@@ -50,12 +53,12 @@ def maxEvent():
     return event
 
 
-def createEvent(numfields, multiline=False, maxSize=False):
+def createEvent(numfields, multiline=False, fieldsPerLine=1, maxSize=False):
     if not maxSize:
         fields = createFieldNames(numfields)
         values = createValues(fields)
         timestamp = createTimeStamp()
-        event = mergeData(timestamp, fields, values, multiline)
+        event = mergeData(timestamp, fields, values, multiline, fieldsPerLine)
     else:
         event = maxEvent()
     return event
@@ -64,13 +67,19 @@ def createEvent(numfields, multiline=False, maxSize=False):
 def genData(conf):
     filename = 'test.log'
     numfields = 10
+    multiline = False
+    eventsPerLine = 1
     if 'filename' in conf:
         filename = conf['filename']
     if 'numfields' in conf:
         numfields = int(conf['numfields'])
+    if 'multiline' in conf:
+        multiline = bool(conf['multiline'])
+        if 'fieldsPerLine' in conf:
+            fieldsPerLine = int(conf['fieldsPerLine'])
     logfile = open(filename, 'a')
     while 1:
-        event = createEvent(numfields)
+        event = createEvent(numfields, multiline, fieldsPerLine)
         logfile.write(event)
         logfile.flush()
         os.fsync(logfile)

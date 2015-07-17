@@ -20,3 +20,12 @@ numfields = <int>
 * Fields will be named field0=<int> field1=<int> etc.
 * Field values will be in a range from 100 to 999
 * Defaults to 10
+
+multiline = <boolean>
+* Determines if using multiline events or single line events
+* This parameter should be used with fieldsPerLine
+* Defaults to False
+
+fieldsPerLine = <int>
+* Determines how many fields to use per line when using multiline=True
+* Defaults to 1
