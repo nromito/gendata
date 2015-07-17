@@ -93,7 +93,7 @@ class GenDataDaemon(Daemon):
 
 	
 if __name__ == '__main__':
-    daemon = GenDataDaemon('/Users/nromito/projects/python/gendata/gendata.pid', stdout='/Users/nromito/projects/python/gendata/gendata_stdout.log', stderr='/Users/nromito/projects/python/gendata/gendata_stderr.log')
+    daemon = GenDataDaemon('/tmp/gendata.pid', stdout='/tmp/gendata_stdout.log', stderr='/tmp/gendata_stderr.log')
     if len(sys.argv) == 2:
         if 'start' == sys.argv[1]:
             daemon.start()

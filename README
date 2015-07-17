@@ -1,0 +1,12 @@
+In order to use this, create a gendata.conf file in the directory /tmp.
+
+gendata.conf spec:
+filename = <path-of-logfile>
+* This is the name of the logfile that you will be generating.
+* Defaults to /tmp/test.log
+
+numfields = <int>
+* This is the number of fields that will be generated.
+* Fields will be named field0=<int> field1=<int> etc.
+* Field values will be in a range from 100 to 999
+* Defaults to 10
