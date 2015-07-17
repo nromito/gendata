@@ -1,4 +1,14 @@
-In order to use this, create a gendata.conf file in the directory /tmp.
+Steps for use:
+1.) Download zip file from github
+2.) Unzip where ever you please
+3.) Create gendata.conf in /tmp/ directory (following specification will detail configurations)
+4.) Run "python gendatad.py start" to start generating data
+5.) Run "python gendatad.py stop" to stop generating data
+
+* stdout and stderr are redirected to log files in /tmp/ called gendata_stdout.log and gendata_stderr.log
+* If you stop gendata and then start it again, it will start appending to the same file. It will not truncate.
+
+In order to use gendata, create a gendata.conf file in the directory /tmp.
 
 gendata.conf spec:
 filename = <path-of-logfile>
