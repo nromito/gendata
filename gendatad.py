@@ -68,7 +68,7 @@ def genData(conf):
         filename = conf['filename']
     if 'numfields' in conf:
         numfields = int(conf['numfields'])
-    logfile = open(filename, 'w')
+    logfile = open(filename, 'a')
     while 1:
         event = createEvent(numfields)
         logfile.write(event)
