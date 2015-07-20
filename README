@@ -29,3 +29,7 @@ multiline = <boolean>
 fieldsPerLine = <int>
 * Determines how many fields to use per line when using multiline=True
 * Defaults to 1
+
+filetype = log|csv|xml
+* Determines the type of log file to generate
+* Defaults to log

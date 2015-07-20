@@ -4,40 +4,7 @@ import random
 import time
 import datetime
 from daemon import Daemon
-
-
-def createFieldNames(numfields=10):
-    fieldName = 'field'
-    fields = []
-    for idx in range(numfields):
-        fields.append(fieldName + str(idx))
-    return fields
-
-def createValues(fields):
-    numfields = len(fields)
-    values = []
-    for idx in range(numfields):
-        values.append(random.randint(100,999))
-    return values
-
-def createTimeStamp():
-    return str(datetime.datetime.now())
-
-
-def mergeData(timestamp, fields, values, multiline, fieldsPerLine):
-    event = timestamp + ' '
-    count = 0
-    if multiline:
-        event += '\n'
-    for idx in range(len(fields)):
-        event += (str(fields[idx]) + '=' + str(values[idx]) + ' ')
-        count += 1
-        if multiline and count==fieldsPerLine:
-            event += '\n'
-            count = 0
-    if not multiline:
-        event += '\n'
-    return event
+from loggen import *
 
 def maxEvent():
     fieldName = 'field='
@@ -53,37 +20,13 @@ def maxEvent():
     return event
 
 
-def createEvent(numfields, multiline=False, fieldsPerLine=1, maxSize=False):
-    if not maxSize:
-        fields = createFieldNames(numfields)
-        values = createValues(fields)
-        timestamp = createTimeStamp()
-        event = mergeData(timestamp, fields, values, multiline, fieldsPerLine)
-    else:
-        event = maxEvent()
-    return event
 
-
-def genData(conf):
-    filename = 'test.log'
-    numfields = 10
-    multiline = False
-    eventsPerLine = 1
-    if 'filename' in conf:
-        filename = conf['filename']
-    if 'numfields' in conf:
-        numfields = int(conf['numfields'])
-    if 'multiline' in conf:
-        multiline = bool(conf['multiline'])
-        if 'fieldsPerLine' in conf:
-            fieldsPerLine = int(conf['fieldsPerLine'])
-    logfile = open(filename, 'a')
-    while 1:
-        event = createEvent(numfields, multiline, fieldsPerLine)
-        logfile.write(event)
-        logfile.flush()
-        os.fsync(logfile)
-        time.sleep(random.uniform(0,3))
+def genData(generator):
+	generator.openLog('a')
+	while 1:
+		event = generator.createEvent()
+		generator.writeEvent(event)
+		time.sleep(random.uniform(0,3))
 
 
 def loadConf():
@@ -95,10 +38,23 @@ def loadConf():
         conf[kv[0]] = kv[1]
     return conf
 
+def createGenerator(conf):
+	generator = None
+	if 'filetype' in conf:
+		if conf['filetype'] == 'csv':
+			generator = CsvGenerator(conf)
+		elif conf['filetype'] == 'xml':
+			generator = XmlGenerator(conf)
+	else:
+		generator = LogGenerator(conf)
+	return generator
+			
 class GenDataDaemon(Daemon):
     def run(self):
 	conf = loadConf()
-	genData(conf)
+	generator = createGenerator(conf)
+	generator = LogGenerator(conf)
+	genData(generator)
 
 	
 if __name__ == '__main__':
