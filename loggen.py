@@ -37,9 +37,26 @@ class Generator():
 			if 'fieldsPerLine' in conf:
 				self.fieldsPerLine = int(conf['fieldsPerLine'])
 
+	def createFieldNames(self):
+		fieldName = 'field'
+		self.fields = []
+		for idx in range(self.numfields):
+			self.fields.append(fieldName + str(idx))
+
+	def createValues(self):
+		self.values = []
+		for idx in range(self.numfields):
+			self.values.append(random.randint(100,999))
+
 	def createTimeStamp(self):
     		self.timestamp =  str(datetime.datetime.now())
 		return self.timestamp
+
+	def clearEventData(self):
+		self.fields = []
+		self.values = []
+		self.timestamp = ''
+		self.currentEvent = ''
 
 	def openLog(self, mode):
 		self.logfile = open(self.filename, mode)
@@ -52,23 +69,13 @@ class Generator():
 class LogGenerator(Generator):
 	def __init__(self, conf):
 		Generator.__init__(self, conf)
+
 	def createEvent(self):
 		self.clearEventData()
 		self.createFieldNames()
 		self.createValues()
 		self.createTimeStamp()
 		return self.mergeData()
-			
-	def createFieldNames(self):
-		fieldName = 'field'
-		self.fields = []
-		for idx in range(self.numfields):
-			self.fields.append(fieldName + str(idx))
-
-	def createValues(self):
-		self.values = []
-		for idx in range(self.numfields):
-			self.values.append(random.randint(100,999))
 
 	def mergeData(self):
 		event = self.timestamp + ' '
@@ -86,15 +93,46 @@ class LogGenerator(Generator):
 		self.currentEvent = event
 		return event
 
-	def clearEventData(self):
-		self.fields = []
-		self.values = []
-		self.timestamp = ''
-		self.currentEvent = ''
 
 class CsvGenerator(Generator):
 	def __init__(self, conf):
 		Generator.__init__(self, conf)
+		self.firstEvent = True
+
+	def createEvent(self):
+		if self.firstEvent == True:
+			self.firstEvent = False
+			return self.createHeader()
+		self.clearEventData()
+		self.createValues()
+		self.createTimeStamp()
+		return self.mergeData()
+
+	def createHeader(self):
+		header = 'timestamp,'
+		self.createFieldNames()
+		for idx in range(self.numfields):
+			delim = self.getDelim(idx)
+			header += (str(self.fields[idx]) + delim)
+		header += '\n'
+		self.header = header
+		return self.header
+
+	def mergeData(self):
+		event = self.timestamp + ','
+		for idx in range(self.numfields):
+			delim = self.getDelim(idx)
+			event += (str(self.values[idx]) + delim)
+		event += '\n'
+		self.currentEvent = event
+		return event
+
+	def getDelim(self, idx):
+		if idx == (self.numfields - 1):
+			delim = ''
+		else:
+			delim = ','
+		return delim
 
 class XmlGenerator(Generator):
 	def __init__(self, conf):
