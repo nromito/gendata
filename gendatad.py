@@ -38,22 +38,12 @@ def loadConf():
         conf[kv[0]] = kv[1]
     return conf
 
-def createGenerator(conf):
-	generator = None
-	if 'filetype' in conf:
-		if conf['filetype'] == 'csv':
-			generator = CsvGenerator(conf)
-		elif conf['filetype'] == 'xml':
-			generator = XmlGenerator(conf)
-	else:
-		generator = LogGenerator(conf)
-	return generator
-			
+
 class GenDataDaemon(Daemon):
     def run(self):
 	conf = loadConf()
-	generator = createGenerator(conf)
-	generator = LogGenerator(conf)
+	genFactory = GeneratorFactory(conf)
+	generator = genFactory.createGenerator()
 	genData(generator)
 
 	

@@ -4,6 +4,24 @@ import os
 import time
 import datetime
 
+class GeneratorFactory():
+	def __init__(self, conf):
+		self.filetype = 'log'
+		if 'filetype' in conf:
+			self.filetype = conf['filetype']
+		self.conf = conf
+
+	def createGenerator(self):
+		generator = None
+		conf = self.conf
+		if self.filetype == 'csv':
+			generator = CsvGenerator(conf)
+		elif self.filetype == 'xml':
+			generator = XmlGenerator(conf)
+		else:
+			generator = LogGenerator(conf)
+		return generator
+		
 class Generator():
 	def __init__(self, conf):
 		self.filename = '/tmp/test.log'
